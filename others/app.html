@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Satellite Date</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="satellite"></div>
+<style>
+    
+</style>
+<h1>Satellite Data</h1>
+
+<div class="sensor-container">
+
+    <div class="sensor-box" id="gpsData">
+        <div class="sensor-title">GPS Data</div>
+        <div class="sensor-data"></div>
+    </div>
+
+    <div class="sensor-box" id="adxlData">
+        <div class="sensor-title">Accelerometer</div>
+        <div class="sensor-data"></div>
+    </div>
+
+    <div class="sensor-box" id="magData">
+        <div class="sensor-title">Magnetometer</div>
+        <div class="sensor-data"></div>
+    </div>
+    <div class="sensor-box" id="voltageData">
+        <div class="sensor-title">Volatge</div>
+        <div class="sensor-data">
+        
+        </div>
+    </div>
+    <div class="sensor-box" id="temperatureData">
+        <div class="sensor-title">Temperature</div>
+        <div class="sensor-data">
+
+        </div>
+    </div>
+    <div class="sensor-box" id="humidityData">
+        <div class="sensor-title">Humidity</div>
+        <div class="sensor-data">
+
+        </div>
+    </div>
+
+
+
+
+    <div class="sensor-box" id="pressureData">
+        <div class="sensor-title">Pressure</div>
+        <div class="sensor-data">
+
+        </div>
+    </div>
+    <div class="sensor-box" id="altitudeData">
+        <div class="sensor-title">Altitude</div>
+        <div class="sensor-data">
+        </div>
+    </div>
+    <div class="sensor-box" id="coData">
+        <div class="sensor-title">Carbon Monoxide</div>
+        <div class="sensor-data"><span id="coDataValue"></span></div>
+    </div>
+    <div class="sensor-box" id="co2Data">
+        <div class="sensor-title">Carbon Dioxide</div>
+        <div class="sensor-data"><span id="co2DataValue"></span></div>
+    </div>
+</div>
+<textarea name="" class="message-display" id="" cols="120" rows="8" disabled></textarea>
+<div class="chatbox-container">
+    <input type="text" id="messageInput" class="message-input" placeholder="Type your message...">
+    <button onclick="sendMessage()" class="send-button">Send</button>
+</div>
+
+<script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
+<script>
+    const socket = io('http://localhost:3000');
+
+    socket.on('adxl', (data) => {
+        document.getElementById('adxlData').innerHTML = `<div class="sensor-title">Acceleration</div><div class="sensor-data">${data}</div>`;
+    });
+
+    socket.on('mag', (data) => {
+        document.getElementById('magData').innerHTML = `<div class="sensor-title">Magnetometer</div><div class="sensor-data">${data}</div>`;
+    });
+
+    socket.on('vth', (data) => {
+        document.getElementById('voltageData').innerHTML =  `<div class="sensor-title">Voltage</div><div class="sensor-data">${data[0]}</div>`
+        document.getElementById('temperatureData').innerHTML =  `<div class="sensor-title">Temperature</div><div class="sensor-data">${data[1]}</div>`
+        document.getElementById('humidityData').innerHTML =  `<div class="sensor-title">Humidity</div><div class="sensor-data">${data[2]}</div>`
+    });
+
+    socket.on('co', (data) => {
+        document.getElementById('coDataValue').innerText = data[0];
+        document.getElementById('co2DataValue').innerText = data[1];
+    });
+
+    socket.on('gps', (data) => {
+        document.getElementById('gpsData').innerHTML = `<div class="sensor-title">GPS Data</div><div class="sensor-data">${data}</div>`;
+    });
+    socket.on('responsemsg',(data)=>{
+        console.log("hello")
+        alert(data)
+        document.getElementById('message-display').innerText = data
+    });
+
+    socket.on('bmp', (data) => {
+        document.getElementById('pressureData').innerHTML = `<div class="sensor-title">Pressure</div><div class="sensor-data">${data[0]}</div>`;
+        document.getElementById('altitudeData').innerHTML = `<div class="sensor-title">Altitude</div><div class="sensor-data">${data[1]}</div>`;
+    });
+    function sendMessage() {
+        const messageInput = document.getElementById('messageInput');
+        const message = messageInput.value.trim();
+        alert("hi")
+        if (message !== '') {
+          
+            socket.emit('chatMessage', message);
+
+    
+            messageInput.value = '';
+        }
+    }
+</script>
+
+</body>
+</html>
